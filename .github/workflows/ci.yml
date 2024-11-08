@@ -1,0 +1,48 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'renovate.json'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'renovate.json'
+
+permissions:
+  packages: write
+
+jobs:
+  checks:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: katas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '22.0.2'
+          distribution: 'zulu'
+          architecture: 'x64'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: wrapper
+          build-root-directory: katas
+      - name: Build
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: wrapper
+          build-root-directory: katas
+          arguments: build -x test
+      - name: Test
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: wrapper
+          build-root-directory: katas
+          arguments: test
+#        env:
